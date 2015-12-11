@@ -91,6 +91,49 @@ Namespace ImageFileRename
         End Function
     End Class
 
+    Public Class Filename_Canon_Video
+        Inherits ImageFileRename.FileNameStyle
+
+        Public Overloads Shared Function FileNameConforms(ByVal strFileName As String) As Boolean
+            Dim blnReturn As Boolean
+            Dim strFileTitle As String
+
+            blnReturn = False
+
+            strFileTitle = FileTitle(strFileName)
+
+            Select Case True
+                Case Len(strFileTitle) <> 8
+                Case Not (Left(strFileTitle, 4) = "MVI_")
+                Case Not IsNumeric(Right(strFileTitle, 4))
+                Case Else
+                    blnReturn = True
+            End Select
+
+            Return blnReturn
+
+        End Function
+
+        Public Overrides Function FileDescription(ByVal strFileName As String) As String
+            Dim strReturn As String
+
+            strReturn = ""
+
+            Return strReturn
+
+        End Function
+
+        Public Overrides Function FileNumber(ByVal strFileName As String) As String
+
+            Dim strReturn As String
+
+            strReturn = Split(FileTitle(strFileName), "_")(1)
+
+            Return strReturn
+
+        End Function
+    End Class
+
     Public Class FileName_Minolta
         Inherits ImageFileRename.FileNameStyle
 
@@ -496,7 +539,7 @@ Namespace ImageFileRename
 
     End Class
 
-    Public Class FileName_Date_Time_ImageNumber
+    Public Class FileName_Date_Time_RandomNumber
         Inherits ImageFileRename.FileNameStyle
 
         Public Overloads Shared Function FileNameConforms(ByVal strFileName As String) As Boolean
@@ -561,7 +604,7 @@ Namespace ImageFileRename
         End Function
 
         Public Overrides Function FileDescription(ByVal strFileName As String) As String
-            
+
             Return ""
 
         End Function
@@ -570,7 +613,9 @@ Namespace ImageFileRename
             Dim strReturn As String
 
             strReturn = FileTitle(strFileName)
-            strReturn = Split(strReturn, "_")(2)
+            strReturn = Split(strReturn, "_")(1)
+            strReturn = strReturn.Remove(2, 1)
+            strReturn = strReturn.Remove(4, 1)
 
             Return strReturn
 

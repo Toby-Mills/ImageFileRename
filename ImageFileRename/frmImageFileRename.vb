@@ -1,5 +1,7 @@
 Imports System.IO
 Imports ImageFileRename
+Imports System.Linq
+Imports System.Threading.Tasks
 
 Public Class frmImageFileRename
     Inherits System.Windows.Forms.Form
@@ -59,16 +61,23 @@ Public Class frmImageFileRename
     Friend WithEvents cblPerson As System.Windows.Forms.CheckedListBox
     Friend WithEvents txtPerson As System.Windows.Forms.TextBox
     Friend WithEvents Label7 As System.Windows.Forms.Label
-    Friend WithEvents ShapeContainer1 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
-    Friend WithEvents RectangleShape1 As Microsoft.VisualBasic.PowerPacks.RectangleShape
-    Friend WithEvents RectangleShape2 As Microsoft.VisualBasic.PowerPacks.RectangleShape
+    Private WithEvents ShapeContainer1 As PowerPacks.ShapeContainer
+    Private WithEvents RectangleShape1 As PowerPacks.RectangleShape
+    Private WithEvents RectangleShape2 As PowerPacks.RectangleShape
     Friend WithEvents Label8 As System.Windows.Forms.Label
     Friend WithEvents Label9 As System.Windows.Forms.Label
     Friend WithEvents lnkAll As System.Windows.Forms.LinkLabel
     Friend WithEvents lnkNone As System.Windows.Forms.LinkLabel
     Friend WithEvents lblNewFileName As System.Windows.Forms.Label
+    Friend WithEvents VidCurrent As AxWMPLib.AxWindowsMediaPlayer
+    Friend WithEvents lnkDateFromFile As LinkLabel
+    Friend WithEvents ContextMenuDateFromFile As ContextMenuStrip
+    Friend WithEvents CreatedDate As ToolStripMenuItem
+    Friend WithEvents ModifiedDate As ToolStripMenuItem
     Friend WithEvents cmbDescription As System.Windows.Forms.ComboBox
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmImageFileRename))
         Me.cmdBrowse = New System.Windows.Forms.Button()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.lblDirectory = New System.Windows.Forms.Label()
@@ -105,7 +114,14 @@ Public Class frmImageFileRename
         Me.lnkAll = New System.Windows.Forms.LinkLabel()
         Me.lnkNone = New System.Windows.Forms.LinkLabel()
         Me.lblNewFileName = New System.Windows.Forms.Label()
+        Me.VidCurrent = New AxWMPLib.AxWindowsMediaPlayer()
+        Me.lnkDateFromFile = New System.Windows.Forms.LinkLabel()
+        Me.ContextMenuDateFromFile = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.CreatedDate = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ModifiedDate = New System.Windows.Forms.ToolStripMenuItem()
         CType(Me.PicCurrent, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.VidCurrent, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.ContextMenuDateFromFile.SuspendLayout()
         Me.SuspendLayout()
         '
         'cmdBrowse
@@ -447,10 +463,56 @@ Public Class frmImageFileRename
         Me.lblNewFileName.Size = New System.Drawing.Size(0, 20)
         Me.lblNewFileName.TabIndex = 37
         '
+        'VidCurrent
+        '
+        Me.VidCurrent.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.VidCurrent.Enabled = True
+        Me.VidCurrent.Location = New System.Drawing.Point(16, 69)
+        Me.VidCurrent.Name = "VidCurrent"
+        Me.VidCurrent.OcxState = CType(resources.GetObject("VidCurrent.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.VidCurrent.Size = New System.Drawing.Size(745, 493)
+        Me.VidCurrent.TabIndex = 38
+        Me.VidCurrent.Visible = False
+        '
+        'lnkDateFromFile
+        '
+        Me.lnkDateFromFile.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lnkDateFromFile.AutoSize = True
+        Me.lnkDateFromFile.ContextMenuStrip = Me.ContextMenuDateFromFile
+        Me.lnkDateFromFile.Location = New System.Drawing.Point(875, 560)
+        Me.lnkDateFromFile.Name = "lnkDateFromFile"
+        Me.lnkDateFromFile.Size = New System.Drawing.Size(43, 13)
+        Me.lnkDateFromFile.TabIndex = 39
+        Me.lnkDateFromFile.TabStop = True
+        Me.lnkDateFromFile.Text = "from file"
+        '
+        'ContextMenuDateFromFile
+        '
+        Me.ContextMenuDateFromFile.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CreatedDate, Me.ModifiedDate})
+        Me.ContextMenuDateFromFile.Name = "ContextMenuDateFromFile"
+        Me.ContextMenuDateFromFile.Size = New System.Drawing.Size(150, 48)
+        Me.ContextMenuDateFromFile.Text = "Created Date"
+        '
+        'CreatedDate
+        '
+        Me.CreatedDate.Name = "CreatedDate"
+        Me.CreatedDate.Size = New System.Drawing.Size(149, 22)
+        Me.CreatedDate.Text = "Created Date"
+        '
+        'ModifiedDate
+        '
+        Me.ModifiedDate.Name = "ModifiedDate"
+        Me.ModifiedDate.Size = New System.Drawing.Size(149, 22)
+        Me.ModifiedDate.Text = "Modified Date"
+        '
         'frmImageFileRename
         '
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.ClientSize = New System.Drawing.Size(936, 692)
+        Me.Controls.Add(Me.lnkDateFromFile)
+        Me.Controls.Add(Me.VidCurrent)
         Me.Controls.Add(Me.lblNewFileName)
         Me.Controls.Add(Me.lnkNone)
         Me.Controls.Add(Me.lnkAll)
@@ -484,9 +546,12 @@ Public Class frmImageFileRename
         Me.Controls.Add(Me.cmdBrowse)
         Me.Controls.Add(Me.chkAutoNumber)
         Me.Controls.Add(Me.ShapeContainer1)
+        Me.KeyPreview = True
         Me.Name = "frmImageFileRename"
         Me.Text = "Image File Rename 2.0"
         CType(Me.PicCurrent, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.VidCurrent, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ContextMenuDateFromFile.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -506,19 +571,24 @@ Public Class frmImageFileRename
     Private c_objFileHistory As FileHistory
 
     Private Sub cmdBrowse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdBrowse.Click
+        ShowOpenFileDialog()
+    End Sub
+
+    Private Sub ShowOpenFileDialog()
         Me.Cursor = Cursors.WaitCursor
         If Me.OpenFileDialogBrowse.ShowDialog() = DialogResult.OK Then
             c_objFileHistory.AddFile(Me.OpenFileDialogBrowse.FileName)
-            LoadImage(c_objFileHistory.CurrentFile)
+            LoadFile(c_objFileHistory.CurrentFile)
         End If
         Me.Cursor = Cursors.Default
     End Sub
-
     Private Function GetFileNameStyle(ByVal strFileName As String) As ImageFileRename.FileNameStyle
 
         Select Case True
             Case ImageFileRename.Filename_Canon.FileNameConforms(strFileName)
                 Return New ImageFileRename.Filename_Canon
+            Case ImageFileRename.Filename_Canon_Video.FileNameConforms(strFileName)
+                Return New ImageFileRename.Filename_Canon_Video
             Case ImageFileRename.FileName_Sony.FileNameConforms(strFileName)
                 Return New ImageFileRename.FileName_Sony
             Case ImageFileRename.FileName_Minolta.FileNameConforms(strFileName)
@@ -527,8 +597,8 @@ Public Class frmImageFileRename
                 Return New ImageFileRename.FileName_Konika
             Case ImageFileRename.Filename_Olympus.FileNameConforms(strFileName)
                 Return New ImageFileRename.Filename_Olympus
-            Case ImageFileRename.FileName_Date_Time_ImageNumber.FileNameConforms(strFileName)
-                Return New ImageFileRename.FileName_Date_Time_ImageNumber
+            Case ImageFileRename.FileName_Date_Time_RandomNumber.FileNameConforms(strFileName)
+                Return New ImageFileRename.FileName_Date_Time_RandomNumber
             Case ImageFileRename.FileName_Film_Frame.FileNameConforms(strFileName)
                 Return New ImageFileRename.FileName_Film_Frame
             Case ImageFileRename.FileName_Film_FrameDescr.FileNameConforms(strFileName)
@@ -548,22 +618,21 @@ Public Class frmImageFileRename
         End Select
 
     End Function
-
-    Private Sub LoadImage(ByVal strFile As String)
-        Dim fsImage As FileStream
-        Dim bmpImage As Bitmap
+    Private Sub LoadFile(ByVal strFile As String)
+        Dim strExtension As String
         Dim objFileNameStyle As ImageFileRename.FileNameStyle
         Dim dtePictureTaken As Date
         Dim strDescription As String
 
         c_blnLoading = True
 
-        fsImage = New FileStream(strFile, FileMode.Open)
-        bmpImage = New Bitmap(fsImage)
+        strExtension = modCommonFunctions.Extension(strFile)
+
+
 
         Me.lblDirectory.Text = FilePath(strFile)
         Me.lblFile.Text = FileName(strFile)
-        Me.PicCurrent.Image = bmpImage 'imgCurrent
+
 
         objFileNameStyle = GetFileNameStyle(strFile)
 
@@ -587,7 +656,7 @@ Public Class frmImageFileRename
 
             dtePictureTaken = objFileNameStyle.FileDate(strFile)
             If dtePictureTaken = Date.MinValue Then
-                dtePictureTaken = DatePictureTaken(fsImage)
+                dtePictureTaken = DatePictureTaken(strFile)
             End If
             If dtePictureTaken = Date.MinValue Then
                 Me.txtFileDate.Text = ""
@@ -600,25 +669,65 @@ Public Class frmImageFileRename
             Me.txtExtension.Text = objFileNameStyle.Extension(strFile)
         End If
 
-        fsImage.Close()
-
-        CalculateNewFileName()
+        MetadataChanged()
         Me.cmbDescription.Focus()
+
+        Select Case strExtension.ToLower()
+            Case "jpg"
+                LoadImage(strFile)
+                Me.PicCurrent.Visible = True
+                Me.VidCurrent.Visible = False
+            Case "avi", "mov"
+                LoadVideo(strFile)
+                Me.VidCurrent.Visible = True
+                Me.PicCurrent.Visible = False
+        End Select
 
         c_blnSaved = False
         c_blnLoading = False
 
     End Sub
 
-    Private Function FileDate(ByVal strString As String) As String
+    Private Sub LoadVideo(ByVal strFile As String)
+
+        Me.VidCurrent.URL = strFile
+
+    End Sub
+    Private Sub LoadImage(ByVal strFile As String)
+        Dim bmpImage As Bitmap
+
+        Me.VidCurrent.URL = ""
+
+        Using fsImage As FileStream = New FileStream(strFile, FileMode.Open)
+            bmpImage = New Bitmap(fsImage)
+            fsImage.Close()
+        End Using
+
+        Me.PicCurrent.Image = bmpImage 'imgCurrent
+
+
+
+    End Sub
+
+    Private Enum FileDateType As Integer
+        Created = 1
+        Modified = 2
+    End Enum
+
+    Private Function FileDate(ByVal strString As String, enFileDateType As FileDateType) As String
         Dim filePicture As IO.FileInfo
         Dim strReturn As String
-        Dim dteCreated As Date
-
+        Dim dteFileDate As Date
 
         filePicture = New IO.FileInfo(strString)
-        dteCreated = filePicture.LastWriteTime
-        strReturn = Format(dteCreated, "yyyyMMdd")
+        Select Case enFileDateType
+            Case FileDateType.Created
+                dteFileDate = filePicture.CreationTime
+            Case FileDateType.Modified
+                dteFileDate = filePicture.LastWriteTime
+        End Select
+
+        strReturn = Format(dteFileDate, "yyyyMMdd")
 
         filePicture = Nothing
 
@@ -627,10 +736,10 @@ Public Class frmImageFileRename
     End Function
 
     Private Function CalculateFullDescription() As String
-        Dim strReturn As String
-        Dim strDescription As String
-        Dim strPeople As String
-        Dim strLeadCharacter As String
+        Dim strReturn As String = ""
+        Dim strDescription As String = ""
+        Dim strPeople As String = ""
+        Dim strLeadCharacter As String = ""
 
         strPeople = BuildPeopleString()
         If strPeople > "" Then
@@ -661,16 +770,19 @@ Public Class frmImageFileRename
         Return strReturn
 
     End Function
+    Private Sub MetadataChanged()
+
+        WarningsForSave()
+        CalculateNewFileName()
+
+    End Sub
 
     Private Sub CalculateNewFileName()
-        Dim strPeople As String
 
         Me.lblNewFileName.Text = Me.txtFileDate.Text
 
         If Me.txtFileNumber.Text > "" Then
             If Me.lblNewFileName.Text > "" Then
-                'Dad
-                'Me.txtNewFileName.Text &= " "
                 Me.lblNewFileName.Text &= "_"
             End If
             Me.lblNewFileName.Text &= Me.txtFileNumber.Text
@@ -710,11 +822,11 @@ Public Class frmImageFileRename
     End Function
 
     Private Sub txtFileDate_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileDate.TextChanged
-        CalculateNewFileName()
+        MetadataChanged()
     End Sub
 
     Private Sub txtFileNumber_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileNumber.TextChanged
-        CalculateNewFileName()
+        MetadataChanged()
     End Sub
 
     Private Sub cmbDescription_MouseEnter(sender As Object, e As System.EventArgs) Handles cmbDescription.MouseEnter
@@ -723,61 +835,147 @@ Public Class frmImageFileRename
 
     Private Sub cmbDescription_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbDescription.TextChanged
 
-        CalculateNewFileName()
+        MetadataChanged()
 
     End Sub
 
-    Private Sub cmdUpdate_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdUpdate.Click
+    Private Async Sub cmdUpdate_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdUpdate.Click
+
+        Await SaveFile()
+
+    End Sub
+
+    Private Async Function SaveFile() As Task(Of Boolean)
+        Dim fileImage As System.IO.FileInfo
+        Dim alstWarnings As ArrayList
+        Dim strNewFileName As String
+        Dim blnSave As Boolean = True
+        Dim blnSuccess As Boolean = False
 
         Cursor = Cursors.WaitCursor
-        SaveFile()
+
+        alstWarnings = WarningsForSave()
+
+        If alstWarnings.Count > 0 Then
+            If MsgBox(alstWarnings.Count & " fields have no values. Are you sure you want to Save?", vbOKCancel, "Blank Fields") = MsgBoxResult.Cancel Then
+                blnSave = False
+            End If
+        End If
+        If blnSave Then
+            Try
+
+                strNewFileName = Me.lblDirectory.Text & "\" & Me.lblNewFileName.Text
+
+                Using SourceStream As FileStream = File.Open(c_objFileHistory.CurrentFile, FileMode.Open)
+                    Using DestinationStream As FileStream = File.Create(strNewFileName)
+                        Await SourceStream.CopyToAsync(DestinationStream)
+                    End Using
+
+                End Using
+
+                fileImage = New FileInfo(c_objFileHistory.CurrentFile)
+                fileImage.Delete()
+
+                c_objFileHistory.UpdateCurrentFile(strNewFileName)
+
+                c_blnSaved = True
+
+                If Not InDescriptionList(Me.cmbDescription.Text) Then
+                    AddToDescriptionList(Me.cmbDescription.Text)
+                End If
+
+                blnSuccess = True
+            Catch ex As Exception
+                MsgBox(ex.Message)
+                blnSuccess = False
+            End Try
+        End If
+
         Cursor = Cursors.Default
 
-    End Sub
-
-    Private Function SaveFile() As Boolean
-        Dim fileImage As System.IO.FileInfo
-
-        Try
-            fileImage = New FileInfo(c_objFileHistory.CurrentFile)
-
-            fileImage.MoveTo(Me.lblDirectory.Text & "\" & Me.lblNewFileName.Text)
-
-            c_blnSaved = True
-
-            c_objFileHistory.UpdateCurrentFile(fileImage.FullName)
-
-            If Not InDescriptionList(Me.cmbDescription.Text) Then
-                AddToDescriptionList(Me.cmbDescription.Text)
-            End If
-
-            Return True
-        Catch ex As Exception
-            MsgBox(ex.Message)
-            Return False
-        End Try
+        Return blnSuccess
 
     End Function
 
-    Private Function NextFileName(ByVal strFile As String) As String
-        Dim dir As DirectoryInfo
-        Dim strFileName As String
-        Dim file() As FileInfo
-        Dim fileImage As FileInfo
-        Dim intFile As Int16
-        Dim strReturn As String
+    Private Function WarningsForSave() As ArrayList
+        Dim alstReturn As New ArrayList
 
-        strFileName = FileName(strFile)
-        dir = New DirectoryInfo(FilePath(strFile))
-        file = dir.GetFiles("*.jpg")
-        For intFile = 0 To UBound(file)
-            fileImage = file(intFile)
-            If fileImage.Name = strFileName Then
-                If intFile < UBound(file) Then
-                    strReturn = file(intFile + 1).FullName
+        cmbDescription.BackColor = Color.White
+        txtDescription2.BackColor = Color.White
+        txtFileNumber.BackColor = Color.White
+        txtFileDate.BackColor = Color.White
+        txtExtension.BackColor = Color.White
+
+        If Me.cmbDescription.Text = "" Then
+            cmbDescription.BackColor = Color.IndianRed
+            alstReturn.Add("No Description")
+        End If
+
+        If Me.txtDescription2.Text = "" Then
+            alstReturn.Add("No Location")
+            txtDescription2.BackColor = Color.IndianRed
+        End If
+
+        If txtFileNumber.Text = "" Then
+            alstReturn.Add("No Number")
+            txtFileNumber.BackColor = Color.IndianRed
+        End If
+
+        If txtFileDate.Text = "" Then
+            alstReturn.Add("No Date")
+            txtFileDate.BackColor = Color.IndianRed
+        End If
+
+        If txtExtension.Text = "" Then
+            alstReturn.Add("No File Extension")
+            txtExtension.BackColor = Color.IndianRed
+        End If
+
+        Return alstReturn
+
+    End Function
+
+    Private Function SupportedFiles(strDirectory As String) As Generic.IEnumerable(Of String)
+        Return Directory.EnumerateFiles(strDirectory, "*.*", SearchOption.TopDirectoryOnly).Where(SupportedFileTypesFunction)
+    End Function
+
+    Private Function SupportedFileTypesFunction() As System.Func(Of String, Boolean)
+        Return Function(strFile As String) FileTypeSupported(strFile)
+    End Function
+
+    Private Function FileTypeSupported(strFileName As String) As Boolean
+        Dim strExtension As String
+
+        strExtension = modCommonFunctions.Extension(strFileName)
+
+        FileTypeSupported = True
+
+        Select Case strExtension.ToLower
+            Case "jpg"
+            Case "mov"
+            Case "avi"
+            Case Else
+                Return False
+        End Select
+
+    End Function
+
+    Private Function NextFileName(ByVal strCurrentFile As String) As String
+        Dim files As Generic.IEnumerable(Of String)
+        Dim strFile As String
+        Dim intFile As Int16
+        Dim strReturn As String = ""
+
+        files = SupportedFiles(FilePath(strCurrentFile))
+        For intFile = 0 To files.Count - 1
+            strFile = files(intFile)
+            If strFile = strCurrentFile Then
+                If intFile < files.Count - 1 Then
+                    strReturn = files(intFile + 1)
                 Else
-                    strReturn = file(0).FullName
+                    strReturn = files(0)
                 End If
+                Exit For
             End If
         Next
 
@@ -785,25 +983,22 @@ Public Class frmImageFileRename
 
     End Function
 
-    Private Function PreviousFileName(ByVal strFile As String) As String
-        Dim dir As DirectoryInfo
-        Dim strFileName As String
-        Dim file() As FileInfo
-        Dim fileImage As FileInfo
+    Private Function PreviousFileName(ByVal strCurrentFile As String) As String
+        Dim files As Generic.IEnumerable(Of String)
+        Dim strFile As String
         Dim intFile As Int16
-        Dim strReturn As String
+        Dim strReturn As String = ""
 
-        strFileName = FileName(strFile)
-        dir = New DirectoryInfo(FilePath(strFile))
-        file = dir.GetFiles("*.jpg")
-        For intFile = 0 To UBound(file)
-            fileImage = file(intFile)
-            If fileImage.Name = strFileName Then
+        files = SupportedFiles(FilePath(strCurrentFile))
+        For intFile = 0 To files.Count - 1
+            strFile = files(intFile)
+            If strFile = strCurrentFile Then
                 If intFile > 0 Then
-                    strReturn = file(intFile - 1).FullName
+                    strReturn = files(intFile - 1)
                 Else
-                    strReturn = file(UBound(file)).FullName
+                    strReturn = files(files.Count - 1)
                 End If
+                Exit For
             End If
         Next
 
@@ -823,16 +1018,20 @@ Public Class frmImageFileRename
 
     Private Sub cmdSaveAndNext_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSaveAndNext.Click
 
+        SaveAndNext()
+
+    End Sub
+
+    Private Async Sub SaveAndNext()
         Cursor = Cursors.WaitCursor
 
-        If SaveFile() Then
+        If Await SaveFile() Then
 
             NextFile()
 
         End If
 
         Cursor = Cursors.Default
-
     End Sub
 
     Private Sub NextFile()
@@ -846,7 +1045,7 @@ Public Class frmImageFileRename
             strNextFileName = c_objFileHistory.MoveForward
         End If
 
-        LoadImage(c_objFileHistory.CurrentFile)
+        LoadFile(c_objFileHistory.CurrentFile)
 
     End Sub
 
@@ -879,7 +1078,7 @@ Public Class frmImageFileRename
 
         If Not c_objFileHistory.AtFirstFile Then
             c_objFileHistory.MoveBack()
-            LoadImage(c_objFileHistory.CurrentFile)
+            LoadFile(c_objFileHistory.CurrentFile)
         End If
 
         Me.Cursor = Cursors.Default
@@ -887,29 +1086,49 @@ Public Class frmImageFileRename
     End Sub
 
     Private Sub txtDescription2_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDescription2.TextChanged
-        CalculateNewFileName()
+        MetadataChanged()
     End Sub
 
-    Private Function DatePictureTaken(ByVal fs As FileStream) As Date
+    Private Function DatePictureTaken(ByVal strFilePath As String) As Date
         Dim tagdatum As JSG.PhotoPropertiesLibrary.PhotoTagDatum
         Dim dteTaken As Date
 
         dteTaken = Date.MinValue
         Try
-            c_PhotoProperties.Analyze(fs)
+            c_PhotoProperties.Analyze(strFilePath)
             tagdatum = c_PhotoProperties.GetTagDatum(36867) 'Date Taken
-            'If tagdatum Is Nothing Then
-            '    tagdatum = c_PhotoProperties.GetTagDatum(36867) 'Date Original
-            'End If
             If Not tagdatum Is Nothing Then
                 dteTaken = Date.ParseExact(tagdatum.Value, "yyyy:MM:dd HH:mm:ss", Nothing)
             End If
+
         Catch ex As Exception
         End Try
 
         Return dteTaken
 
     End Function
+
+    Private Async Sub frmImageFileRename_KeyDown(sender As Object, e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+        If e.Control = True Then
+            Select Case e.KeyCode
+                Case Keys.O
+                    ShowOpenFileDialog()
+                Case Keys.S
+                    Await SaveFile()
+                Case Keys.Enter
+                    SaveAndNext()
+                Case Keys.P
+                    Me.cblPerson.Focus()
+                Case Keys.D
+                    Me.cmbDescription.Focus()
+                Case Keys.L
+                    Me.txtDescription2.Focus()
+                Case Keys.A
+                    Me.txtPerson.Focus()
+            End Select
+        End If
+
+    End Sub
 
     Private Sub frmImageFileRename_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Dim objAssembly As System.Reflection.Assembly
@@ -958,7 +1177,7 @@ Public Class frmImageFileRename
 
             txtPerson.Text = ""
 
-            CalculateNewFileName()
+            MetadataChanged()
         End If
 
     End Sub
@@ -971,7 +1190,7 @@ Public Class frmImageFileRename
             blnUpdating = True
             cblPerson.SetItemCheckState(e.Index, e.NewValue)
             blnUpdating = False
-            CalculateNewFileName()
+            MetadataChanged()
         End If
 
     End Sub
@@ -1008,7 +1227,6 @@ Public Class frmImageFileRename
             .Add("Frances")
             .Add("Arthur")
             .Add("Sally")
-            .Add("Joffy")
             .Add("Gary")
             .Add("Sarah")
         End With
@@ -1019,6 +1237,24 @@ Public Class frmImageFileRename
 
     Private Sub cblPerson_MouseEnter(sender As Object, e As System.EventArgs) Handles cblPerson.MouseEnter
         cblPerson.Focus()
+    End Sub
+
+    Private Sub frmImageFileRename_PreviewKeyDown(sender As Object, e As System.Windows.Forms.PreviewKeyDownEventArgs) Handles Me.PreviewKeyDown
+    End Sub
+
+    Private Sub lnkDateFromFile_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lnkDateFromFile.LinkClicked
+
+        lnkDateFromFile.ContextMenuStrip.Show(Cursor.Position)
+
+    End Sub
+
+    Private Sub ContextMenuDateFromFile_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ContextMenuDateFromFile.ItemClicked
+        Select Case e.ClickedItem.Name
+            Case "CreatedDate"
+                txtFileDate.Text = FileDate(c_objFileHistory.CurrentFile, FileDateType.Created)
+            Case "ModifiedDate"
+                txtFileDate.Text = FileDate(c_objFileHistory.CurrentFile, FileDateType.Modified)
+        End Select
     End Sub
 End Class
 

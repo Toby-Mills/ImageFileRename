@@ -1,3 +1,4 @@
+Imports System.IO
 
 Public Module modCommonFunctions
 
@@ -48,86 +49,86 @@ Public Module modCommonFunctions
         Catch ex As Exception
         End Try
     End Function
-	Public Function LeftOf(ByVal strString As String, ByVal strKey As String) As String
-		'returns the sub string left of strKey
-		'search for theKey starts from the left side of the string
-		'example: leftof("xxx\yyyy\zzzz","\") returns "xxx"
+    Public Function LeftOf(ByVal strString As String, ByVal strKey As String) As String
+        'returns the sub string left of strKey
+        'search for theKey starts from the left side of the string
+        'example: leftof("xxx\yyyy\zzzz","\") returns "xxx"
 
-		Dim lngInString As Long
-		Dim strReturn As String
+        Dim lngInString As Long
+        Dim strReturn As String = ""
 
-		Try
-			strReturn = strString		 'default return
-			lngInString = InStr(1, strString, strKey, 1)
-			If (lngInString > 0) Then
-				strReturn = Left(strString, lngInString - 1)
-			Else
-				strReturn = strString
-			End If
-		Catch ex As Exception
+        Try
+            strReturn = strString        'default return
+            lngInString = InStr(1, strString, strKey, 1)
+            If (lngInString > 0) Then
+                strReturn = Left(strString, lngInString - 1)
+            Else
+                strReturn = strString
+            End If
+        Catch ex As Exception
 
-		End Try
+        End Try
 
-		Return strReturn
+        Return strReturn
 
-	End Function
+    End Function
 
-	Public Sub Info(ByVal Message As String)
-		'displays an information message
-		MsgBox(Message, MsgBoxStyle.Information, "Information")
-	End Sub
+    Public Sub Info(ByVal Message As String)
+        'displays an information message
+        MsgBox(Message, MsgBoxStyle.Information, "Information")
+    End Sub
 
-	Public Sub Warning(ByVal Message As String)
-		'displays an warning message
-		MsgBox(Message, MsgBoxStyle.Exclamation, "Warning")
-	End Sub
+    Public Sub Warning(ByVal Message As String)
+        'displays an warning message
+        MsgBox(Message, MsgBoxStyle.Exclamation, "Warning")
+    End Sub
 
-	Public Sub ErrorMsg(ByVal Message As String, Optional ByVal RoutineName As String = "")
-		'displays a error message information message
-		If Len(Message) > 200 Then Message = Left(Message, 200) & "..."
-		If RoutineName = "" Then
-			MsgBox(Message, MsgBoxStyle.Critical, "Error ")
-		Else
-			MsgBox(Message, MsgBoxStyle.Critical, "Error (" & RoutineName & ")")
-		End If
-	End Sub
+    Public Sub ErrorMsg(ByVal Message As String, Optional ByVal RoutineName As String = "")
+        'displays a error message information message
+        If Len(Message) > 200 Then Message = Left(Message, 200) & "..."
+        If RoutineName = "" Then
+            MsgBox(Message, MsgBoxStyle.Critical, "Error ")
+        Else
+            MsgBox(Message, MsgBoxStyle.Critical, "Error (" & RoutineName & ")")
+        End If
+    End Sub
 
-	Public Function NewGUID() As String
+    Public Function NewGUID() As String
 
-		NewGUID = Guid.NewGuid().ToString()
+        NewGUID = Guid.NewGuid().ToString()
 
-	End Function
+    End Function
 
-	Public Function StringToGUID(ByVal InString As String) As Guid
-		Dim objConverter As New System.ComponentModel.GuidConverter
-		Dim guidOut As Guid
+    Public Function StringToGUID(ByVal InString As String) As Guid
+        Dim objConverter As New System.ComponentModel.GuidConverter
+        Dim guidOut As Guid
 
-		Try
-			guidOut = objConverter.ConvertFromString(InString)
-		Catch ex As Exception
-			Return Nothing
-		End Try
-		Return guidOut
+        Try
+            guidOut = objConverter.ConvertFromString(InString)
+        Catch ex As Exception
+            Return Nothing
+        End Try
+        Return guidOut
 
-	End Function
+    End Function
 
 
-	Public Function FileName(ByVal strPath As String) As String
-		Dim strToken() As String
+    Public Function FileName(ByVal strPath As String) As String
+        Dim strToken() As String
 
-		strToken = strPath.Split(CChar("/"), CChar("\"))
-		FileName = strToken(UBound(strToken))
-	End Function
+        strToken = strPath.Split(CChar("/"), CChar("\"))
+        FileName = strToken(UBound(strToken))
+    End Function
 
-	Public Function FilePath(ByVal strPath As String) As String
-		Dim strFileName As String
+    Public Function FilePath(ByVal strPath As String) As String
+        Dim strFileName As String
 
-		strFileName = FileName(strPath)
-		If Len(strPath) > Len(strFileName) + 1 Then
-			FilePath = Left(strPath, Len(strPath) - (Len(strFileName) + 1))
-		Else
-			FilePath = ""
-		End If
+        strFileName = FileName(strPath)
+        If Len(strPath) > Len(strFileName) + 1 Then
+            FilePath = Left(strPath, Len(strPath) - (Len(strFileName) + 1))
+        Else
+            FilePath = ""
+        End If
 
     End Function
 
@@ -177,11 +178,10 @@ Public Module modCommonFunctions
     End Function
 
     Public Function IsStringAnDouble(ByVal strInput As String) As Boolean
-        Dim dblParse As Double
         Dim blnIsInteger As Boolean
         'try to convert value to int by choosing the middle value
         Try
-            dblParse.Parse(strInput)
+            Double.Parse(strInput)
             blnIsInteger = True
         Catch ex As Exception
             blnIsInteger = False
@@ -281,7 +281,6 @@ Public Module modCommonFunctions
         'Round a decimal number Upward to the specified no. of decimal places
         Dim intScale As Integer
         Dim decSmall As Decimal
-        Dim intRemainder As Integer
         Dim decReturn As Decimal
 
         intScale = 10 ^ intDecimalPlaces
@@ -302,8 +301,8 @@ Public Module modCommonFunctions
     Public Function Ordinal(ByVal intInteger As Integer) As String
         'takes an integer and returns the appropriate Ordinal
         'e.g. 1 = 1st, 2 = 2nd, 3 = 3rd etc.
-        Dim strReturn As String
-        Dim strLastTwoDigits As String
+        Dim strReturn As String = ""
+        Dim strLastTwoDigits As String = ""
         Dim charLastDigit As Char
 
         strReturn = intInteger.ToString
