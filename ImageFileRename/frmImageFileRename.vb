@@ -589,6 +589,10 @@ Public Class frmImageFileRename
                 Return New ImageFileRename.Filename_Canon
             Case ImageFileRename.Filename_Canon_Video.FileNameConforms(strFileName)
                 Return New ImageFileRename.Filename_Canon_Video
+            Case ImageFileRename.FileName_iPhone.FileNameConforms(strFileName)
+                Return New ImageFileRename.FileName_iPhone
+            Case ImageFileRename.FileName_Fuji.FileNameConforms(strFileName)
+                Return New ImageFileRename.FileName_Fuji
             Case ImageFileRename.FileName_Sony.FileNameConforms(strFileName)
                 Return New ImageFileRename.FileName_Sony
             Case ImageFileRename.FileName_Minolta.FileNameConforms(strFileName)
@@ -863,7 +867,6 @@ Public Class frmImageFileRename
         End If
         If blnSave Then
             Try
-
                 strNewFileName = Me.lblDirectory.Text & "\" & Me.lblNewFileName.Text
 
                 Using SourceStream As FileStream = File.Open(c_objFileHistory.CurrentFile, FileMode.Open)

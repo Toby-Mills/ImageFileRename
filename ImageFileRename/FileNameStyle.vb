@@ -195,6 +195,41 @@ Namespace ImageFileRename
         End Function
     End Class
 
+    Public Class FileName_Fuji
+        Inherits ImageFileRename.FileNameStyle
+
+        Public Overloads Shared Function FileNameConforms(ByVal strFileName As String) As Boolean
+            Dim blnReturn As Boolean
+            Dim strFileTitle As String
+
+            blnReturn = False
+
+            strFileTitle = FileTitle(strFileName)
+
+            Select Case True
+                Case Len(strFileTitle) <> 8
+                Case Left(strFileTitle, 4) <> "DSCF"
+                Case Not IsNumeric(Right(strFileTitle, 4))
+                Case Else
+                    blnReturn = True
+            End Select
+
+            Return blnReturn
+
+        End Function
+
+        Public Overrides Function FileNumber(ByVal strFileName As String) As String
+
+            Return Right(FileTitle(strFileName), 4)
+
+        End Function
+
+        Public Overrides Function FileDescription(strFileName As String) As String
+            Return ""
+        End Function
+    End Class
+
+
     Public Class FileName_Konika
         Inherits ImageFileRename.FileNameStyle
 
@@ -700,7 +735,7 @@ Namespace ImageFileRename
 
             strFileTitle = FileTitle(strFileName)
 
-                blnreturn= IsNumeric(strFileTitle)
+            blnReturn = IsNumeric(strFileTitle)
 
             Return blnReturn
 
@@ -726,4 +761,77 @@ Namespace ImageFileRename
 
     End Class
 
+    Public Class FileName_iPhone
+        Inherits ImageFileRename.FileNameStyle
+
+        Public Overloads Shared Function FileNameConforms(ByVal strFileName As String) As Boolean
+            Dim blnReturn As Boolean
+            Dim strFileTitle As String
+
+            strFileTitle = FileTitle(strFileName)
+
+            blnReturn = False
+
+            Select Case True
+                Case Len(strFileTitle) <> 19
+                Case UBound(Split(strFileTitle, " ")) <> 1
+                Case UBound(Split(Split(strFileTitle, " ")(0), "-")) <> 2
+                Case UBound(Split(Split(strFileTitle, " ")(1), ".")) <> 2
+                Case Else
+                    blnReturn = True
+            End Select
+
+            Return blnReturn
+
+        End Function
+
+        Public Overrides Function FileDate(ByVal strFileName As String) As Date
+            Dim dteReturn As Date
+            Dim strYear As String
+            Dim strMonth As String
+            Dim strDay As String
+            Dim strFileTitle As String
+
+            dteReturn = Date.MinValue
+
+            strFileTitle = FileTitle(strFileName)
+
+            Try
+                strDay = strFileTitle.Substring(8, 2)
+                strMonth = strFileTitle.Substring(5, 2)
+                strYear = Left(strFileTitle, 4)
+
+                dteReturn = New Date(CInt(strYear), CInt(strMonth), CInt(strDay))
+
+            Catch ex As Exception
+                dteReturn = Date.MinValue
+            End Try
+
+            Return dteReturn
+
+        End Function
+
+        Public Overrides Function FileDescription(ByVal strFileName As String) As String
+
+            Return ""
+
+        End Function
+
+        Public Overrides Function FileNumber(ByVal strFileName As String) As String
+            Dim strFileTitle As String
+            Dim strHours As String
+            Dim strMinutes As String
+            Dim strSeconds As String
+
+            strFileTitle = FileTitle(strFileName)
+
+            strHours = Split(Split(strFileTitle, " ")(1), ".")(0)
+            strMinutes = Split(Split(strFileTitle, " ")(1), ".")(1)
+            strSeconds = Split(Split(strFileTitle, " ")(1), ".")(2)
+
+            Return strHours & strMinutes & strSeconds
+
+        End Function
+
+    End Class
 End Namespace
